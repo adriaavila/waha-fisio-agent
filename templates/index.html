@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-950 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KineLife — Panel del Fisioterapeuta</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15), transparent 40%),
+                        radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.1), transparent 40%),
+                        #020617;
+        }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 10px 20px -10px rgba(99, 102, 241, 0.2);
+        }
+        .glow-green {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+        }
+        .glow-amber {
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+        }
+        .glow-red {
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+        }
+    </style>
+</head>
+<body class="min-h-full pb-12">
+    <!-- Navbar -->
+    <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-emerald-400 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-500/20">
+                    K
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">KineLife</h1>
+                    <p class="text-xs text-slate-500">Agente de Agendamiento Autónomo</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <!-- Estado de WhatsApp -->
+                <div class="flex items-center px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs">
+                    <span class="text-slate-400 mr-2">WhatsApp:</span>
+                    {% if waha_status == 'CONNECTED' or waha_status == 'ONLINE' %}
+                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 glow-green mr-1.5 animate-pulse"></span>
+                        <span class="text-emerald-400 font-semibold uppercase tracking-wider text-[10px]">Conectado</span>
+                    {% elif waha_status == 'SCAN_QR_CODE' %}
+                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-500 glow-amber mr-1.5 animate-pulse"></span>
+                        <span class="text-amber-400 font-semibold uppercase tracking-wider text-[10px]">Escanear QR</span>
+                    {% else %}
+                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-red-500 glow-red mr-1.5"></span>
+                        <span class="text-red-400 font-semibold uppercase tracking-wider text-[10px]">{{ waha_status }}</span>
+                    {% endif %}
+                </div>
+                <button onclick="window.location.reload();" class="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 transition-colors text-slate-300">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89M9 11l3-3 3 3m-3-3v12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        
+        <!-- Welcome Banner -->
+        <div class="glass-panel rounded-2xl p-6 sm:p-8 mb-8 relative overflow-hidden flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+            <div class="relative z-10">
+                <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white mb-1">¡Hola, KineLife!</h2>
+                <p class="text-slate-400 text-sm max-w-xl">Aquí puedes ver el estado del bot de WhatsApp, las próximas citas en Cal.com y las conversaciones en tiempo real con tus pacientes.</p>
+            </div>
+            <div class="flex space-x-3 shrink-0">
+                <a href="https://cal.com" target="_blank" class="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 transition-colors inline-flex items-center text-slate-300">
+                    Ver Cal.com
+                    <svg class="ml-1.5 h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Left 2 Columns: Bookings & Activity -->
+            <div class="lg:col-span-2 space-y-8">
+                
+                <!-- Upcoming Bookings Panel -->
+                <div class="glass-panel rounded-2xl p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center space-x-2">
+                            <svg class="h-5 w-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <h3 class="text-lg font-bold text-white">Próximas Citas Agendadas</h3>
+                        </div>
+                        <span class="px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 text-xs font-semibold">
+                            {{ bookings|length }} Total
+                        </span>
+                    </div>
+
+                    {% if bookings %}
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-slate-800/50">
+                                <thead>
+                                    <tr class="text-left text-xs font-semibold text-slate-400 tracking-wider">
+                                        <th class="pb-3">Paciente</th>
+                                        <th class="pb-3">Fecha/Hora (UTC)</th>
+                                        <th class="pb-3">Contacto</th>
+                                        <th class="pb-3">Recordatorios</th>
+                                        <th class="pb-3 text-right">ID</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800/30 text-sm">
+                                    {% for b in bookings %}
+                                        <tr class="hover:bg-slate-900/20 transition-colors">
+                                            <td class="py-4 pr-3">
+                                                <div class="font-medium text-white">{{ b.client_name }}</div>
+                                                <div class="text-xs text-slate-400">{{ b.client_email }}</div>
+                                            </td>
+                                            <td class="py-4 px-3 text-slate-300 font-medium">
+                                                {{ b.readable_time }}
+                                            </td>
+                                            <td class="py-4 px-3">
+                                                {% if b.client_phone %}
+                                                    <a href="https://wa.me/{{ b.client_phone }}" target="_blank" class="inline-flex items-center text-xs text-indigo-400 hover:text-indigo-300 underline font-mono">
+                                                        +{{ b.client_phone }}
+                                                    </a>
+                                                {% else %}
+                                                    <span class="text-slate-600">-</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="py-4 px-3">
+                                                <div class="flex items-center space-x-2 text-xs">
+                                                    <span class="px-2 py-0.5 rounded-full {{ 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' if b.reminder_24h_sent else 'bg-slate-800 text-slate-500' }}">
+                                                        24h
+                                                    </span>
+                                                    <span class="px-2 py-0.5 rounded-full {{ 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' if b.reminder_2h_sent else 'bg-slate-800 text-slate-500' }}">
+                                                        2h
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td class="py-4 pl-3 text-right text-xs font-mono text-slate-500">
+                                                {{ b.cal_booking_id[:8] }}...
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-12 border border-dashed border-slate-800 rounded-xl bg-slate-900/10">
+                            <svg class="mx-auto h-8 w-8 text-slate-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p class="text-slate-400 text-sm">No hay citas confirmadas agendadas para los próximos días.</p>
+                            <p class="text-slate-600 text-xs mt-1">Cuando tus pacientes agenden vía WhatsApp aparecerán aquí.</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Recent Logs / Chat activity -->
+                <div class="glass-panel rounded-2xl p-6">
+                    <div class="flex items-center space-x-2 mb-6">
+                        <svg class="h-5 w-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <h3 class="text-lg font-bold text-white">Actividad de Interacciones Recientes</h3>
+                    </div>
+
+                    <div class="flow-root">
+                        <ul role="list" class="-mb-8">
+                            {% if logs %}
+                                {% for l in logs %}
+                                    <li>
+                                        <div class="relative pb-8">
+                                            {% if not loop.last %}
+                                                <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-slate-800/60" aria-hidden="true"></span>
+                                            {% endif %}
+                                            <div class="relative flex space-x-3">
+                                                <div>
+                                                    <!-- Icon color depending on action type -->
+                                                    {% if 'ERROR' in l.action %}
+                                                        <span class="h-8 w-8 rounded-lg bg-red-500/10 border border-red-500/30 flex items-center justify-center">
+                                                            <span class="w-2.5 h-2.5 rounded-full bg-red-500 glow-red"></span>
+                                                        </span>
+                                                    {% elif 'CREATED' in l.action or 'BOOKING' in l.action %}
+                                                        <span class="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
+                                                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 glow-green"></span>
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="h-8 w-8 rounded-lg bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center">
+                                                            <span class="w-2.5 h-2.5 rounded-full bg-indigo-400"></span>
+                                                        </span>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="flex-1 min-w-0 pt-1.5 flex justify-between space-x-4">
+                                                    <div>
+                                                        <p class="text-sm text-slate-300">
+                                                            <span class="font-semibold text-slate-100">{{ l.action }}</span> 
+                                                            {% if l.phone_number %}
+                                                                <span class="text-slate-400">para (+{{ l.phone_number }})</span>
+                                                            {% endif %}
+                                                        </p>
+                                                        <p class="text-xs text-slate-400 mt-0.5">{{ l.details }}</p>
+                                                    </div>
+                                                    <div class="text-right text-xs whitespace-nowrap text-slate-500">
+                                                        <time>{{ l.timestamp }}</time>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            {% else %}
+                                <div class="text-center py-6 text-slate-500 text-sm">
+                                    Aún no hay actividad de interacción registrada en el log.
+                                </div>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Settings, Instructions & QR Scanner -->
+            <div class="lg:col-span-1 space-y-8">
+                
+                <!-- Connection Details Card -->
+                <div class="glass-panel rounded-2xl p-6">
+                    <h3 class="text-lg font-bold text-white mb-4 flex items-center">
+                        <svg class="h-5 w-5 text-indigo-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                        </svg>
+                        Parámetros del Bot
+                    </h3>
+                    
+                    <div class="space-y-4 text-sm">
+                        <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-500 block mb-1">Nombre de Sesión (WAHA)</span>
+                            <span class="font-mono text-white font-medium">{{ waha_session }}</span>
+                        </div>
+                        
+                        <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-500 block mb-1">Webhook URL de WhatsApp (WAHA -> Bot)</span>
+                            <span class="font-mono text-xs text-slate-300 block break-all">http://[vps-ip]:8000/webhook/whatsapp</span>
+                        </div>
+                        
+                        <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-500 block mb-1">Webhook URL de Citas (Cal.com -> Bot)</span>
+                            <span class="font-mono text-xs text-slate-300 block break-all">http://[vps-ip]:8000/webhook/calcom</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- How it works Card -->
+                <div class="glass-panel rounded-2xl p-6 bg-gradient-to-br from-indigo-950/20 to-slate-950">
+                    <h3 class="text-lg font-bold text-white mb-4 flex items-center">
+                        <svg class="h-5 w-5 text-indigo-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                        Guía de Demostración
+                    </h3>
+                    <div class="space-y-3 text-xs text-slate-400 leading-relaxed">
+                        <p class="font-medium text-slate-200">Prueba el flujo tú mismo en WhatsApp:</p>
+                        <ol class="list-decimal list-inside space-y-2 text-slate-400">
+                            <li>Asegúrate de que la sesión de WAHA esté conectada.</li>
+                            <li>Escribe <span class="text-emerald-400 font-mono bg-emerald-950/50 px-1 py-0.5 rounded border border-emerald-900">Hola</span> al número conectado. El bot debería saludarte amablemente.</li>
+                            <li>Dile algo como <span class="italic text-slate-300">"Quiero pedir una hora para fisioterapia"</span>.</li>
+                            <li>El bot consultará disponibilidad en Cal.com en tiempo real y te dará opciones.</li>
+                            <li>Indica la opción de hora que desees.</li>
+                            <li>Confirma tus datos (Nombre y Email) y el bot agendará automáticamente la cita.</li>
+                        </ol>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+</body>
+</html>
