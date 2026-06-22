@@ -5,18 +5,28 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-CALCOM_API_KEY = os.getenv("CALCOM_API_KEY", "")
-CALCOM_EVENT_TYPE_ID = os.getenv("CALCOM_EVENT_TYPE_ID", "")
 CAL_API_VERSION = "2024-08-13"  # Versión estable de API v2
 
 logger = logging.getLogger(__name__)
 
 class CalcomClient:
     def __init__(self):
-        self.api_key = CALCOM_API_KEY
-        self.event_type_id = int(CALCOM_EVENT_TYPE_ID) if CALCOM_EVENT_TYPE_ID.isdigit() else None
         self.base_url = "https://api.cal.com/v2"
-        self.headers = {
+
+    @property
+    def api_key(self) -> str:
+        import database as db
+        return db.get_setting("CALCOM_API_KEY", os.getenv("CALCOM_API_KEY", ""))
+
+    @property
+    def event_type_id(self) -> int:
+        import database as db
+        val = db.get_setting("CALCOM_EVENT_TYPE_ID", os.getenv("CALCOM_EVENT_TYPE_ID", ""))
+        return int(val) if val and str(val).isdigit() else None
+
+    @property
+    def headers(self) -> dict:
+        return {
             "Authorization": f"Bearer {self.api_key}",
             "cal-api-version": CAL_API_VERSION,
             "Content-Type": "application/json"

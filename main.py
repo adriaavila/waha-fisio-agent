@@ -3,7 +3,7 @@ import logging
 import asyncio
 import threading
 from datetime import datetime, timezone as dt_timezone, timedelta
-from fastapi import FastAPI, Request, Depends, HTTPException, status
+from fastapi import FastAPI, Request, Depends, HTTPException, status, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -183,6 +183,18 @@ async def view_dashboard(request: Request, user: str = Depends(get_current_user)
     waha_status_info = waha.get_session_status()
     waha_status = waha_status_info.get("status", "DESCONECTADO")
     
+    # Intentar obtener QR si requiere escaneo
+    qr_code_data = None
+    if waha_status == "SCAN_QR_CODE":
+        try:
+            qr_info = waha.get_qr_code()
+            if qr_info:
+                # WAHA v2 devuelve {"raw": "...", "image": "data:image/png;base64,...", "qr": "..."}
+                # A veces devuelve una imagen raw o base64, pasamos lo que venga
+                qr_code_data = qr_info.get("image") or qr_info.get("qr")
+        except Exception as e:
+            logger.error(f"Error cargando QR: {e}")
+            
     # 2. Cargar reservas del sistema
     bookings = db.get_upcoming_bookings_db()
     
@@ -200,6 +212,22 @@ async def view_dashboard(request: Request, user: str = Depends(get_current_user)
             b["readable_time"] = b["start_time"]
         formatted_bookings.append(b)
         
+    # Cargar valores actuales de settings
+    settings = {
+        "waha_base_url": db.get_setting("WAHA_BASE_URL", os.getenv("WAHA_BASE_URL", "http://localhost:3000")),
+        "waha_api_key": db.get_setting("WAHA_API_KEY", os.getenv("WAHA_API_KEY", "")),
+        "waha_session_name": db.get_setting("WAHA_SESSION_NAME", os.getenv("WAHA_SESSION_NAME", "default")),
+        "calcom_api_key": db.get_setting("CALCOM_API_KEY", os.getenv("CALCOM_API_KEY", "")),
+        "calcom_event_type_id": db.get_setting("CALCOM_EVENT_TYPE_ID", os.getenv("CALCOM_EVENT_TYPE_ID", "")),
+        "gemini_api_key": db.get_setting("GEMINI_API_KEY", os.getenv("GEMINI_API_KEY", "")),
+        "openai_api_key": db.get_setting("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY", "")),
+        "system_instruction": db.get_setting("SYSTEM_INSTRUCTION", "")
+    }
+    
+    # Parámetros del request de FastAPI
+    success_param = request.query_params.get("success")
+    error_param = request.query_params.get("error")
+        
     return templates.TemplateResponse(
         request,
         "index.html", 
@@ -207,9 +235,65 @@ async def view_dashboard(request: Request, user: str = Depends(get_current_user)
             "waha_status": waha_status,
             "waha_session": waha.session_name,
             "bookings": formatted_bookings,
-            "logs": logs
+            "logs": logs,
+            "qr_code_data": qr_code_data,
+            "settings": settings,
+            "success_param": success_param,
+            "error_param": error_param
         }
     )
+
+@app.post("/dashboard/settings")
+async def save_settings(
+    request: Request,
+    waha_base_url: str = Form(None),
+    waha_api_key: str = Form(None),
+    waha_session_name: str = Form(None),
+    calcom_api_key: str = Form(None),
+    calcom_event_type_id: str = Form(None),
+    gemini_api_key: str = Form(None),
+    openai_api_key: str = Form(None),
+    system_instruction: str = Form(None),
+    user: str = Depends(get_current_user)
+):
+    if waha_base_url is not None:
+        db.set_setting("WAHA_BASE_URL", waha_base_url.strip())
+    if waha_api_key is not None:
+        db.set_setting("WAHA_API_KEY", waha_api_key.strip())
+    if waha_session_name is not None:
+        db.set_setting("WAHA_SESSION_NAME", waha_session_name.strip())
+    if calcom_api_key is not None:
+        db.set_setting("CALCOM_API_KEY", calcom_api_key.strip())
+    if calcom_event_type_id is not None:
+        db.set_setting("CALCOM_EVENT_TYPE_ID", calcom_event_type_id.strip())
+    if gemini_api_key is not None:
+        db.set_setting("GEMINI_API_KEY", gemini_api_key.strip())
+    if openai_api_key is not None:
+        db.set_setting("OPENAI_API_KEY", openai_api_key.strip())
+    if system_instruction is not None:
+        db.set_setting("SYSTEM_INSTRUCTION", system_instruction.strip())
+        
+    return RedirectResponse(url="/dashboard?success=settings", status_code=status.HTTP_303_SEE_OTHER)
+
+@app.post("/dashboard/whatsapp/start")
+async def whatsapp_start(request: Request, user: str = Depends(get_current_user)):
+    success = waha.start_session()
+    if success:
+        db.add_log(None, "WAHA_SESSION_START", "Comando de inicio de sesión enviado a WAHA")
+        return RedirectResponse(url="/dashboard?success=whatsapp_start", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        db.add_log(None, "WAHA_SESSION_ERROR", "Error al intentar iniciar la sesión en WAHA")
+        return RedirectResponse(url="/dashboard?error=whatsapp_start_failed", status_code=status.HTTP_303_SEE_OTHER)
+
+@app.post("/dashboard/whatsapp/logout")
+async def whatsapp_logout(request: Request, user: str = Depends(get_current_user)):
+    success = waha.logout_session()
+    if success:
+        db.add_log(None, "WAHA_SESSION_LOGOUT", "Comando de cierre de sesión (logout) enviado a WAHA")
+        return RedirectResponse(url="/dashboard?success=whatsapp_logout", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        db.add_log(None, "WAHA_SESSION_ERROR", "Error al intentar cerrar la sesión en WAHA")
+        return RedirectResponse(url="/dashboard?error=whatsapp_logout_failed", status_code=status.HTTP_303_SEE_OTHER)
 
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):

@@ -5,18 +5,30 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-WAHA_BASE_URL = os.getenv("WAHA_BASE_URL", "http://localhost:3000").rstrip("/")
-WAHA_API_KEY = os.getenv("WAHA_API_KEY", os.getenv("WHATSAPP_API_KEY", ""))
-WAHA_SESSION_NAME = os.getenv("WAHA_SESSION_NAME", "default")
-
 logger = logging.getLogger(__name__)
 
 class WahaClient:
     def __init__(self):
-        self.base_url = WAHA_BASE_URL
-        self.api_key = WAHA_API_KEY
-        self.session_name = WAHA_SESSION_NAME
-        self.headers = {
+        pass
+
+    @property
+    def base_url(self) -> str:
+        import database as db
+        return db.get_setting("WAHA_BASE_URL", os.getenv("WAHA_BASE_URL", "http://localhost:3000")).rstrip("/")
+
+    @property
+    def api_key(self) -> str:
+        import database as db
+        return db.get_setting("WAHA_API_KEY", os.getenv("WAHA_API_KEY", os.getenv("WHATSAPP_API_KEY", "")))
+
+    @property
+    def session_name(self) -> str:
+        import database as db
+        return db.get_setting("WAHA_SESSION_NAME", os.getenv("WAHA_SESSION_NAME", "default"))
+
+    @property
+    def headers(self) -> dict:
+        return {
             "Content-Type": "application/json",
             "X-Api-Key": self.api_key
         }

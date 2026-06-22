@@ -7,7 +7,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -24,33 +24,47 @@
     <style>
         body {
             font-family: 'Outfit', sans-serif;
-            background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15), transparent 40%),
-                        radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.1), transparent 40%),
+            background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15), transparent 45%),
+                        radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.1), transparent 45%),
                         #020617;
         }
         .glass-panel {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(12px);
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(14px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
         .glass-card {
-            background: rgba(30, 41, 59, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(30, 41, 59, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.06);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .glass-card:hover {
             transform: translateY(-2px);
-            border-color: rgba(99, 102, 241, 0.3);
-            box-shadow: 0 10px 20px -10px rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.35);
+            box-shadow: 0 12px 24px -10px rgba(99, 102, 241, 0.25);
         }
         .glow-green {
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
         }
         .glow-amber {
-            box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
         }
         .glow-red {
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+        }
+        /* Custom scrollbar for logs */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.3);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.25);
         }
     </style>
 </head>
@@ -97,25 +111,73 @@
         <!-- Welcome Banner -->
         <div class="glass-panel rounded-2xl p-6 sm:p-8 mb-8 relative overflow-hidden flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
             <div class="relative z-10">
-                <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white mb-1">¡Hola, KineLife!</h2>
-                <p class="text-slate-400 text-sm max-w-xl">Aquí puedes ver el estado del bot de WhatsApp, las próximas citas en Cal.com y las conversaciones en tiempo real con tus pacientes.</p>
+                <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white mb-1">¡Hola, Fisioterapeuta!</h2>
+                <p class="text-slate-400 text-sm max-w-xl">Aquí puedes gestionar la conexión con WhatsApp, enlazar tu calendario de Cal.com, configurar la IA y ver tus citas programadas.</p>
             </div>
             <div class="flex space-x-3 shrink-0">
-                <a href="https://cal.com" target="_blank" class="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 transition-colors inline-flex items-center text-slate-300">
+                <a href="https://cal.com" target="_blank" class="px-4 py-2.5 text-xs font-semibold rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 transition-colors inline-flex items-center text-slate-300">
                     Ver Cal.com
-                    <svg class="ml-1.5 h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg class="ml-1.5 h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                     </svg>
                 </a>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Success/Error Banners -->
+        {% if success_param == 'settings' %}
+        <div class="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm flex items-center">
+            <svg class="h-5 w-5 mr-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Configuración guardada exitosamente. El agente ahora usará los nuevos valores en tiempo real.
+        </div>
+        {% elif success_param == 'whatsapp_start' %}
+        <div class="mb-6 p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm flex items-center">
+            <svg class="h-5 w-5 mr-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Comando de inicio de sesión de WhatsApp enviado. Recarga la página en unos segundos para verificar.
+        </div>
+        {% elif success_param == 'whatsapp_logout' %}
+        <div class="mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm flex items-center">
+            <svg class="h-5 w-5 mr-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Sesión de WhatsApp cerrada correctamente en la puerta de enlace WAHA.
+        </div>
+        {% endif %}
+
+        {% if error_param %}
+        <div class="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center">
+            <svg class="h-5 w-5 mr-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            Ocurrió un error al intentar conectarse con el servicio de WhatsApp.
+        </div>
+        {% endif %}
+
+        <!-- Tabs Navigation -->
+        <div class="flex border-b border-slate-800 mb-8 overflow-x-auto whitespace-nowrap scrollbar-none">
+            <button onclick="switchTab('tab-general')" id="btn-tab-general" class="tab-btn px-6 py-3.5 text-sm font-semibold border-b-2 border-indigo-500 text-indigo-400 focus:outline-none transition-all flex items-center gap-2">
+                📅 Citas y Actividad
+            </button>
+            <button onclick="switchTab('tab-whatsapp')" id="btn-tab-whatsapp" class="tab-btn px-6 py-3.5 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 focus:outline-none transition-all flex items-center gap-2">
+                💬 Conectar WhatsApp
+            </button>
+            <button onclick="switchTab('tab-calendar')" id="btn-tab-calendar" class="tab-btn px-6 py-3.5 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 focus:outline-none transition-all flex items-center gap-2">
+                📆 Enlazar Calendario
+            </button>
+            <button onclick="switchTab('tab-ai')" id="btn-tab-ai" class="tab-btn px-6 py-3.5 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 focus:outline-none transition-all flex items-center gap-2">
+                🤖 Cerebro IA & Prompt
+            </button>
+        </div>
+
+        <!-- TAB CONTENT: GENERAL (CITAS Y LOGS) -->
+        <div id="tab-general" class="tab-content grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            <!-- Left 2 Columns: Bookings & Activity -->
+            <!-- Left 2 Columns: Bookings List -->
             <div class="lg:col-span-2 space-y-8">
-                
-                <!-- Upcoming Bookings Panel -->
                 <div class="glass-panel rounded-2xl p-6">
                     <div class="flex items-center justify-between mb-6">
                         <div class="flex items-center space-x-2">
@@ -233,126 +295,328 @@
                         </div>
                     {% endif %}
                 </div>
+            </div>
 
-                <!-- Recent Logs / Chat activity -->
-                <div class="glass-panel rounded-2xl p-6">
-                    <div class="flex items-center space-x-2 mb-6">
-                        <svg class="h-5 w-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <h3 class="text-lg font-bold text-white">Actividad de Interacciones Recientes</h3>
-                    </div>
+            <!-- Right 1 Column: Activity Log -->
+            <div class="lg:col-span-1">
+                <div class="glass-panel rounded-2xl p-6 h-full flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center space-x-2 mb-6">
+                            <svg class="h-5 w-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <h3 class="text-lg font-bold text-white">Logs de Interacciones</h3>
+                        </div>
 
-                    <div class="flow-root">
-                        <ul role="list" class="-mb-8">
-                            {% if logs %}
-                                {% for l in logs %}
-                                    <li>
-                                        <div class="relative pb-8">
-                                            {% if not loop.last %}
-                                                <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-slate-800/60" aria-hidden="true"></span>
-                                            {% endif %}
-                                            <div class="relative flex space-x-3">
-                                                <div>
-                                                    <!-- Icon color depending on action type -->
-                                                    {% if 'ERROR' in l.action %}
-                                                        <span class="h-8 w-8 rounded-lg bg-red-500/10 border border-red-500/30 flex items-center justify-center">
-                                                            <span class="w-2.5 h-2.5 rounded-full bg-red-500 glow-red"></span>
-                                                        </span>
-                                                    {% elif 'CREATED' in l.action or 'BOOKING' in l.action %}
-                                                        <span class="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
-                                                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 glow-green"></span>
-                                                        </span>
-                                                    {% else %}
-                                                        <span class="h-8 w-8 rounded-lg bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center">
-                                                            <span class="w-2.5 h-2.5 rounded-full bg-indigo-400"></span>
-                                                        </span>
-                                                    {% endif %}
-                                                </div>
-                                                <div class="flex-1 min-w-0 pt-1.5 flex justify-between space-x-4">
+                        <div class="flow-root overflow-y-auto max-h-[480px] pr-2 custom-scrollbar">
+                            <ul role="list" class="-mb-8">
+                                {% if logs %}
+                                    {% for l in logs %}
+                                        <li>
+                                            <div class="relative pb-8">
+                                                {% if not loop.last %}
+                                                    <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-slate-800/60" aria-hidden="true"></span>
+                                                {% endif %}
+                                                <div class="relative flex space-x-3">
                                                     <div>
-                                                        <p class="text-sm text-slate-300">
-                                                            <span class="font-semibold text-slate-100">{{ l.action }}</span> 
-                                                            {% if l.phone_number %}
-                                                                <span class="text-slate-400">para (+{{ l.phone_number }})</span>
-                                                            {% endif %}
-                                                        </p>
-                                                        <p class="text-xs text-slate-400 mt-0.5">{{ l.details }}</p>
+                                                        {% if 'ERROR' in l.action %}
+                                                            <span class="h-8 w-8 rounded-lg bg-red-500/10 border border-red-500/30 flex items-center justify-center">
+                                                                <span class="w-2.5 h-2.5 rounded-full bg-red-500 glow-red"></span>
+                                                            </span>
+                                                        {% elif 'CREATED' in l.action or 'BOOKING' in l.action %}
+                                                            <span class="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
+                                                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 glow-green"></span>
+                                                            </span>
+                                                        {% else %}
+                                                            <span class="h-8 w-8 rounded-lg bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center">
+                                                                <span class="w-2.5 h-2.5 rounded-full bg-indigo-400"></span>
+                                                            </span>
+                                                        {% endif %}
                                                     </div>
-                                                    <div class="text-right text-xs whitespace-nowrap text-slate-500">
-                                                        <time>{{ l.timestamp }}</time>
+                                                    <div class="flex-1 min-w-0 pt-1.5 flex justify-between space-x-4">
+                                                        <div>
+                                                            <p class="text-sm text-slate-300">
+                                                                <span class="font-semibold text-slate-100">{{ l.action }}</span> 
+                                                                {% if l.phone_number %}
+                                                                    <span class="text-slate-400">para (+{{ l.phone_number }})</span>
+                                                                {% endif %}
+                                                            </p>
+                                                            <p class="text-xs text-slate-400 mt-0.5">{{ l.details }}</p>
+                                                        </div>
+                                                        <div class="text-right text-xs whitespace-nowrap text-slate-500">
+                                                            <time>{{ l.timestamp }}</time>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </li>
-                                {% endfor %}
-                            {% else %}
-                                <div class="text-center py-6 text-slate-500 text-sm">
-                                    Aún no hay actividad de interacción registrada en el log.
-                                </div>
-                            {% endif %}
-                        </ul>
+                                        </li>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="text-center py-6 text-slate-500 text-sm">
+                                        Aún no hay actividad de interacción registrada.
+                                    </div>
+                                {% endif %}
+                            </ul>
+                        </div>
                     </div>
-                </div>
-
-            </div>
-
-            <!-- Right Column: Settings, Instructions & QR Scanner -->
-            <div class="lg:col-span-1 space-y-8">
-                
-                <!-- Connection Details Card -->
-                <div class="glass-panel rounded-2xl p-6">
-                    <h3 class="text-lg font-bold text-white mb-4 flex items-center">
-                        <svg class="h-5 w-5 text-indigo-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                        </svg>
-                        Parámetros del Bot
-                    </h3>
                     
-                    <div class="space-y-4 text-sm">
-                        <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800">
-                            <span class="text-xs text-slate-500 block mb-1">Nombre de Sesión (WAHA)</span>
-                            <span class="font-mono text-white font-medium">{{ waha_session }}</span>
-                        </div>
-                        
-                        <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800">
-                            <span class="text-xs text-slate-500 block mb-1">Webhook URL de WhatsApp (WAHA -> Bot)</span>
-                            <span class="font-mono text-xs text-slate-300 block break-all">http://[vps-ip]:8000/webhook/whatsapp</span>
-                        </div>
-                        
-                        <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800">
-                            <span class="text-xs text-slate-500 block mb-1">Webhook URL de Citas (Cal.com -> Bot)</span>
-                            <span class="font-mono text-xs text-slate-300 block break-all">http://[vps-ip]:8000/webhook/calcom</span>
+                    <div class="mt-6 pt-6 border-t border-slate-800">
+                        <div class="rounded-xl bg-indigo-950/20 p-4 border border-indigo-900/30 text-xs text-slate-400">
+                            <span class="font-medium text-slate-200 block mb-1">💡 Modo Demo Activo</span>
+                            Si no has configurado tus API Keys, el sistema responde de forma simulada a palabras clave como "hola", "agendar", o correos electrónicos.
                         </div>
                     </div>
                 </div>
-
-                <!-- How it works Card -->
-                <div class="glass-panel rounded-2xl p-6 bg-gradient-to-br from-indigo-950/20 to-slate-950">
-                    <h3 class="text-lg font-bold text-white mb-4 flex items-center">
-                        <svg class="h-5 w-5 text-indigo-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                        </svg>
-                        Guía de Demostración
-                    </h3>
-                    <div class="space-y-3 text-xs text-slate-400 leading-relaxed">
-                        <p class="font-medium text-slate-200">Prueba el flujo tú mismo en WhatsApp:</p>
-                        <ol class="list-decimal list-inside space-y-2 text-slate-400">
-                            <li>Asegúrate de que la sesión de WAHA esté conectada.</li>
-                            <li>Escribe <span class="text-emerald-400 font-mono bg-emerald-950/50 px-1 py-0.5 rounded border border-emerald-900">Hola</span> al número conectado. El bot debería saludarte amablemente.</li>
-                            <li>Dile algo como <span class="italic text-slate-300">"Quiero pedir una hora para fisioterapia"</span>.</li>
-                            <li>El bot consultará disponibilidad en Cal.com en tiempo real y te dará opciones.</li>
-                            <li>Indica la opción de hora que desees.</li>
-                            <li>Confirma tus datos (Nombre y Email) y el bot agendará automáticamente la cita.</li>
-                        </ol>
-                    </div>
-                </div>
-
             </div>
 
         </div>
 
+        <!-- TAB CONTENT: WHATSAPP CONFIGURATION -->
+        <div id="tab-whatsapp" class="tab-content hidden grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left column: config form -->
+            <div class="lg:col-span-2">
+                <div class="glass-panel rounded-2xl p-6 sm:p-8">
+                    <h3 class="text-lg font-bold text-white mb-6 flex items-center">
+                        <svg class="h-5 w-5 text-indigo-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                        </svg>
+                        Parámetros de WhatsApp (WAHA)
+                    </h3>
+                    
+                    <form action="/dashboard/settings" method="POST" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-300 mb-2">URL Base de WAHA</label>
+                            <input type="text" name="waha_base_url" value="{{ settings.waha_base_url }}" placeholder="http://[vps-ip]:3000" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500 font-mono text-sm transition-colors">
+                            <p class="text-xs text-slate-500 mt-1">La IP y el puerto de tu contenedor de WhatsApp (WAHA). Si está en la misma red Docker de Coolify, puedes usar `http://waha:3000`.</p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-300 mb-2">API Key de WAHA (Opcional)</label>
+                            <input type="password" name="waha_api_key" value="{{ settings.waha_api_key }}" placeholder="Dejar en blanco si no configuraste API key" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500 font-mono text-sm transition-colors">
+                            <p class="text-xs text-slate-500 mt-1">Clave de seguridad definida en `WHATSAPP_API_KEY` dentro de tu servicio de WAHA.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-300 mb-2">Nombre de Sesión</label>
+                            <input type="text" name="waha_session_name" value="{{ settings.waha_session_name }}" placeholder="default" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500 font-mono text-sm transition-colors">
+                            <p class="text-xs text-slate-500 mt-1">El identificador de sesión para Puppeteer en WAHA. Generalmente es `default`.</p>
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="submit" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-semibold text-sm transition-all shadow-lg shadow-indigo-600/15">
+                                Guardar Parámetros de WhatsApp
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right column: Connection controls & QR -->
+            <div class="lg:col-span-1 space-y-8">
+                <!-- Status & Action Card -->
+                <div class="glass-panel rounded-2xl p-6 flex flex-col justify-between">
+                    <div>
+                        <h4 class="text-base font-bold text-white mb-4">Estado de Conexión</h4>
+                        
+                        <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center mb-6">
+                            {% if waha_status == 'CONNECTED' or waha_status == 'ONLINE' %}
+                                <span class="h-4 w-4 rounded-full bg-emerald-500 glow-green animate-pulse mr-3"></span>
+                                <div>
+                                    <p class="text-sm font-bold text-emerald-400">WhatsApp Conectado</p>
+                                    <p class="text-xs text-slate-500">Listo para chatear y enviar recordatorios.</p>
+                                </div>
+                            {% elif waha_status == 'SCAN_QR_CODE' %}
+                                <span class="h-4 w-4 rounded-full bg-amber-500 glow-amber animate-pulse mr-3"></span>
+                                <div>
+                                    <p class="text-sm font-bold text-amber-400">Requiere Escaneo QR</p>
+                                    <p class="text-xs text-slate-500">Escanea el código QR de abajo con tu móvil.</p>
+                                </div>
+                            {% else %}
+                                <span class="h-4 w-4 rounded-full bg-red-500 glow-red mr-3"></span>
+                                <div>
+                                    <p class="text-sm font-bold text-red-400">Desconectado ({{ waha_status }})</p>
+                                    <p class="text-xs text-slate-500">Inicia la sesión para comenzar.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Session Control Buttons -->
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <form action="/dashboard/whatsapp/start" method="POST">
+                                <button type="submit" class="w-full py-2.5 px-4 text-xs font-semibold rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/20 transition-all text-center">
+                                    ▶ Iniciar Sesión
+                                </button>
+                            </form>
+                            <form action="/dashboard/whatsapp/logout" method="POST">
+                                <button type="submit" class="w-full py-2.5 px-4 text-xs font-semibold rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition-all text-center">
+                                    ⏹ Cerrar Sesión
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QR Code Box -->
+                {% if waha_status == 'SCAN_QR_CODE' or qr_code_data %}
+                <div class="glass-panel rounded-2xl p-6 flex flex-col items-center justify-center">
+                    <h4 class="text-sm font-bold text-white mb-4 text-center">Escanear Código QR</h4>
+                    {% if qr_code_data %}
+                        <div class="bg-white p-3 rounded-2xl inline-block shadow-lg">
+                            <!-- Si qr_code_data empieza con data:image, la renderizamos. Si es un link, igual. Si es raw string, se muestra como img -->
+                            <img src="{{ qr_code_data }}" alt="WhatsApp QR Code" class="w-56 h-56">
+                        </div>
+                        <p class="text-[11px] text-slate-400 mt-4 text-center leading-relaxed">Abre WhatsApp en tu teléfono, ve a <strong>Dispositivos Vinculados</strong> y escanea el código QR de arriba para sincronizar el agente.</p>
+                    {% else %}
+                        <div class="h-56 w-56 flex items-center justify-center border border-dashed border-slate-800 rounded-2xl text-slate-600 text-xs text-center p-4">
+                            Obteniendo QR desde la API de WAHA...
+                        </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: CALENDAR CONFIGURATION -->
+        <div id="tab-calendar" class="tab-content hidden grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2">
+                <div class="glass-panel rounded-2xl p-6 sm:p-8">
+                    <h3 class="text-lg font-bold text-white mb-6 flex items-center">
+                        <svg class="h-5 w-5 text-emerald-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Parámetros del Calendario (Cal.com v2)
+                    </h3>
+                    
+                    <form action="/dashboard/settings" method="POST" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-300 mb-2">API Key de Cal.com (Bearer Token)</label>
+                            <input type="password" name="calcom_api_key" value="{{ settings.calcom_api_key }}" placeholder="cal_live_..." class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500 font-mono text-sm transition-colors">
+                            <p class="text-xs text-slate-500 mt-1">Token de desarrollador creado en tu panel de Cal.com (Settings > Developer > API Keys).</p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-300 mb-2">ID del Event Type (Servicio de Fisioterapia)</label>
+                            <input type="text" name="calcom_event_type_id" value="{{ settings.calcom_event_type_id }}" placeholder="ej: 1249301" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500 font-mono text-sm transition-colors">
+                            <p class="text-xs text-slate-500 mt-1">El identificador numérico de la consulta que agendará el agente por defecto. Puedes encontrarlo en la URL al editar el tipo de evento en Cal.com.</p>
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="submit" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-semibold text-sm transition-all shadow-lg shadow-indigo-600/15">
+                                Guardar Conexión de Calendario
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="lg:col-span-1">
+                <div class="glass-panel rounded-2xl p-6 bg-gradient-to-br from-indigo-950/20 to-slate-950">
+                    <h3 class="text-base font-bold text-white mb-4">ℹ️ Configuración del Calendario</h3>
+                    <div class="space-y-4 text-xs text-slate-400 leading-relaxed">
+                        <p>El bot utiliza la API v2 oficial de Cal.com con la versión estable para agendar las citas directamente desde el flujo conversacional de WhatsApp.</p>
+                        <p class="font-medium text-slate-200">Webhook de sincronización:</p>
+                        <p>Para asegurar que las citas de Cal.com aparezcan de inmediato en el panel y que el bot envíe los mensajes de confirmación de WhatsApp, debes configurar un Webhook en Cal.com:</p>
+                        <ol class="list-decimal list-inside space-y-2">
+                            <li>Ve a <strong>Settings > Developer > Webhooks</strong> en tu panel de Cal.com.</li>
+                            <li>Registra la URL: <code class="text-indigo-400 font-mono">http://[tu-vps-ip]:8000/webhook/calcom</code></li>
+                            <li>Suscríbete a los eventos: <strong>Booking Created</strong> y <strong>Booking Cancelled</strong>.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: AI BRAIN & PROMPT -->
+        <div id="tab-ai" class="tab-content hidden grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2">
+                <div class="glass-panel rounded-2xl p-6 sm:p-8">
+                    <h3 class="text-lg font-bold text-white mb-6 flex items-center">
+                        <svg class="h-5 w-5 text-indigo-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                        </svg>
+                        Parámetros de Inteligencia Artificial (Cerebro)
+                    </h3>
+                    
+                    <form action="/dashboard/settings" method="POST" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-300 mb-2">Google Gemini API Key (Recomendado)</label>
+                            <input type="password" name="gemini_api_key" value="{{ settings.gemini_api_key }}" placeholder="AIzaSy..." class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500 font-mono text-sm transition-colors">
+                            <p class="text-xs text-slate-500 mt-1">Llave de Google Gemini (modelo gemini-1.5-flash). El bot usará Gemini por defecto con llamadas a herramientas automatizadas si se provee.</p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-300 mb-2">OpenAI API Key (Alternativo)</label>
+                            <input type="password" name="openai_api_key" value="{{ settings.openai_api_key }}" placeholder="sk-proj-..." class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500 font-mono text-sm transition-colors">
+                            <p class="text-xs text-slate-500 mt-1">Llave de OpenAI (modelo gpt-4o-mini). Usado como fallback si se suministra sola.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-300 mb-2">Instrucciones del Agente (System Prompt)</label>
+                            <textarea name="system_instruction" rows="10" placeholder="Escribe aquí las instrucciones de comportamiento del bot..." class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500 text-sm transition-colors leading-relaxed">{% if settings.system_instruction %}{{ settings.system_instruction }}{% else %}Eres 'KineBot', el asistente inteligente de la clínica de Fisioterapia KineLife.
+Tu objetivo principal es ayudar a los pacientes a consultar horarios disponibles y agendar citas de forma amable, eficiente y profesional.
+
+Instrucciones de comportamiento:
+1. Saluda amablemente al inicio y sé empático. Los pacientes pueden tener dolores o lesiones.
+2. Para agendar una cita, utiliza la herramienta `check_availability` para ver qué horarios están libres. Pídele al usuario que te diga qué fecha o rango de fechas le acomoda (ej: 'esta semana', 'el próximo jueves', etc.).
+3. Cuando te digan una fecha general, consulta la disponibilidad de esa fecha o un rango de 2-3 días alrededor usando `check_availability`.
+4. Cuando el usuario elija una hora específica, pídele su nombre completo y correo electrónico (si no los tienes ya en el historial de chat) antes de proceder.
+5. Llama a la herramienta `book_appointment` para concretar la cita. Necesitarás el horario en formato ISO UTC (ej: '2026-06-25T14:30:00Z'), el nombre, email y teléfono.
+6. Si el usuario pregunta cosas generales sobre fisioterapia o dolores, responde de manera informativa y clara, pero siempre sugiriéndoles agendar una cita para una evaluación profesional.
+7. Hoy es {today_date}.{% endif %}</textarea>
+                            <p class="text-xs text-slate-500 mt-1">Define la personalidad, reglas y cómo deseas que el asistente interactúe con los pacientes. Puedes incluir el precio de las sesiones, dirección, y políticas.</p>
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="submit" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-semibold text-sm transition-all shadow-lg shadow-indigo-600/15">
+                                Guardar Configuración de IA
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="lg:col-span-1">
+                <div class="glass-panel rounded-2xl p-6 bg-gradient-to-br from-indigo-950/20 to-slate-950">
+                    <h3 class="text-base font-bold text-white mb-4">🧠 El Cerebro Conversacional</h3>
+                    <div class="space-y-4 text-xs text-slate-400 leading-relaxed">
+                        <p>El bot mantiene una memoria SQLite persistente por número de teléfono, garantizando que recuerde el contexto de los pacientes entre mensajes.</p>
+                        <p class="font-medium text-slate-200">Fallback Automático:</p>
+                        <p>Si no se proveen API keys de IA (Gemini o OpenAI), el asistente entra automáticamente en **Modo Simulado (Mock Demo)**.</p>
+                        <p>El Modo Simulado permite testear la respuesta rápida del bot de inmediato ante expresiones de saludo y solicitudes de agendamiento sin incurrir en costos ni requerir tokens.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main>
+
+    <!-- JS script for tab switching -->
+    <script>
+        function switchTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            // Remove active style from all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('border-indigo-500', 'text-indigo-400');
+                el.classList.add('border-transparent', 'text-slate-400');
+            });
+            // Show requested tab content
+            document.getElementById(tabId).classList.remove('hidden');
+            // Set active style on requested tab button
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if (activeBtn) {
+                activeBtn.classList.add('border-indigo-500', 'text-indigo-400');
+                activeBtn.classList.remove('border-transparent', 'text-slate-400');
+            }
+            // Save state
+            localStorage.setItem('activeTab', tabId);
+        }
+
+        // Restore tab on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const activeTab = localStorage.getItem('activeTab') || 'tab-general';
+            switchTab(activeTab);
+        });
+    </script>
 </body>
 </html>

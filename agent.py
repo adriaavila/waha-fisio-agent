@@ -10,8 +10,7 @@ from database import add_chat_message, get_chat_history, add_log, save_booking
 
 load_dotenv()
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+# Las llaves API se leen dinámicamente de la base de datos o env
 
 logger = logging.getLogger(__name__)
 calcom = CalcomClient()
@@ -106,7 +105,22 @@ def book_appointment(start_time: str, name: str, email: str, phone: str) -> str:
 
 class BookingAgent:
     def __init__(self):
-        self.system_instruction = (
+        pass
+
+    @property
+    def gemini_api_key(self) -> str:
+        import database as db
+        return db.get_setting("GEMINI_API_KEY", os.getenv("GEMINI_API_KEY", ""))
+
+    @property
+    def openai_api_key(self) -> str:
+        import database as db
+        return db.get_setting("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY", ""))
+
+    @property
+    def system_instruction(self) -> str:
+        import database as db
+        default_instruction = (
             "Eres 'KineBot', el asistente inteligente de la clínica de Fisioterapia KineLife.\n"
             "Tu objetivo principal es ayudar a los pacientes a consultar horarios disponibles y agendar citas de forma amable, eficiente y profesional.\n\n"
             "Instrucciones de comportamiento:\n"
@@ -119,6 +133,7 @@ class BookingAgent:
             "6. Si el usuario pregunta cosas generales sobre fisioterapia o dolores, responde de manera informativa y clara, pero siempre sugiriéndoles agendar una cita para una evaluación profesional.\n"
             "7. Hoy es {today_date}."
         )
+        return db.get_setting("SYSTEM_INSTRUCTION", default_instruction)
 
     def _get_system_instruction(self) -> str:
         today = datetime.now().strftime("%A, %d de %B de %Y")
@@ -137,12 +152,12 @@ class BookingAgent:
         history = get_chat_history(phone_number, limit=10)
         
         # Si no hay llaves configuradas, devolvemos un asistente mockeado para la demo
-        if not GEMINI_API_KEY and not OPENAI_API_KEY:
+        if not self.gemini_api_key and not self.openai_api_key:
             logger.warning("No API Keys configured for Gemini or OpenAI. Using Mock Agent.")
             return self._mock_respond(phone_number, message_text)
 
         try:
-            if GEMINI_API_KEY:
+            if self.gemini_api_key:
                 return self._run_gemini(phone_number, message_text, history)
             else:
                 return self._run_openai(phone_number, message_text, history)
@@ -155,7 +170,7 @@ class BookingAgent:
         """
         Ejecuta la conversación usando Gemini con Automatic Function Calling.
         """
-        genai.configure(api_key=GEMINI_API_KEY)
+        genai.configure(api_key=self.gemini_api_key)
         
         # Formatear el historial para Gemini
         gemini_history = []
@@ -188,7 +203,7 @@ class BookingAgent:
         """
         Ejecuta la conversación usando OpenAI.
         """
-        client = OpenAI(api_key=OPENAI_API_KEY)
+        client = OpenAI(api_key=self.openai_api_key)
         
         # Formatear mensajes
         messages = [{"role": "system", "content": self._get_system_instruction()}]
