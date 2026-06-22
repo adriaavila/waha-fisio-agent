@@ -211,9 +211,9 @@ async def view_dashboard(request: Request, user: str = Depends(get_current_user)
         }
     )
 
-@app.get("/", response_class=RedirectResponse)
-async def root():
-    return RedirectResponse(url="/dashboard")
+@app.get("/", response_class=HTMLResponse)
+async def root(request: Request):
+    return templates.TemplateResponse(request, "landing.html")
 
 # --- Recordatorios Automáticos en Segundo Plano ---
 async def check_and_send_reminders():
